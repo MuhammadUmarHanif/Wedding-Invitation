@@ -37,13 +37,7 @@ export default function DoorOpening({ onOpenStart, onOpened, onInteraction, chil
     }
   }, [phase])
 
-  // Pre-load video and pause at the first frame
   useEffect(() => {
-    const video = videoRef.current
-    if (video) {
-      video.currentTime = 0
-      video.pause()
-    }
     return () => {
       clearTimeout(bumpTimer.current)
       clearTimeout(pigeonTimer.current)
@@ -69,11 +63,19 @@ export default function DoorOpening({ onOpenStart, onOpened, onInteraction, chil
       setShowPigeonNames(true)
     }, PIGEONS_END_AT * 1000)
 
-    video.currentTime = 0
+    try {
+      video.muted = true
+      if (video.currentTime > 0.5) {
+        video.currentTime = 0
+      }
+    } catch {
+      // Ignore
+    }
+
     const playPromise = video.play()
     if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Fallback: If autoplay with sound is blocked, mute and retry
+      playPromise.catch((err) => {
+        console.warn('Playback promise rejected, retrying muted:', err)
         video.muted = true
         video.play().catch(() => {
           finishOpening()
@@ -148,15 +150,6 @@ export default function DoorOpening({ onOpenStart, onOpened, onInteraction, chil
           isBumping ? 'door-bump' : ''
         }`}
       >
-        {/* Instant-paint poster image visible immediately upon page load */}
-        <img
-          src={`${import.meta.env.BASE_URL}assets/door-poster.webp`}
-          alt="Wedding Door"
-          fetchPriority="high"
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-            isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
-        />
         <video
           ref={videoRef}
           src={`${import.meta.env.BASE_URL}assets/door-opening.mp4`}
@@ -167,11 +160,19 @@ export default function DoorOpening({ onOpenStart, onOpened, onInteraction, chil
           preload="auto"
           onTimeUpdate={handleTimeUpdate}
           onEnded={finishOpening}
-          onError={() => {
+          onError={(e) => {
+            console.warn('Door video error:', e)
             finishOpening()
           }}
-          className={`h-full w-full object-cover transition-opacity duration-300 ${
-            isClosed ? 'opacity-0' : 'opacity-100'
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        {/* Instant-paint poster image visible only while door is closed */}
+        <img
+          src={`${import.meta.env.BASE_URL}assets/door-poster.webp`}
+          alt="Wedding Door"
+          fetchPriority="high"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+            isClosed ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
         />
       </div>
