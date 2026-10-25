@@ -97,7 +97,7 @@ export const invitation = {
 
   // Audio: Asma-ul-Husna by Atif Aslam
   music: {
-    src: '/assets/asma-ul-husna.webm',
+    src: `${import.meta.env.BASE_URL}assets/asma-ul-husna.webm`,
     title: 'أسماء الله الحسنى — عاطف أسلم (Asma-ul-Husna)',
   },
 

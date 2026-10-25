@@ -150,13 +150,16 @@ export default function DoorOpening({ onOpenStart, onOpened, onInteraction, chil
       >
         <video
           ref={videoRef}
-          src="/assets/door-opening.mp4"
+          src={`${import.meta.env.BASE_URL}assets/door-opening.mp4`}
           playsInline
           muted
           webkit-playsinline="true"
           preload="auto"
           onTimeUpdate={handleTimeUpdate}
           onEnded={finishOpening}
+          onError={() => {
+            finishOpening()
+          }}
           className="h-full w-full object-cover"
         />
       </div>
