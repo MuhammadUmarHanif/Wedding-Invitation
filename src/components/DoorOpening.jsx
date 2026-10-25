@@ -148,9 +148,19 @@ export default function DoorOpening({ onOpenStart, onOpened, onInteraction, chil
           isBumping ? 'door-bump' : ''
         }`}
       >
+        {/* Instant-paint poster image visible immediately upon page load */}
+        <img
+          src={`${import.meta.env.BASE_URL}assets/door-poster.webp`}
+          alt="Wedding Door"
+          fetchPriority="high"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+            isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+        />
         <video
           ref={videoRef}
           src={`${import.meta.env.BASE_URL}assets/door-opening.mp4`}
+          poster={`${import.meta.env.BASE_URL}assets/door-poster.webp`}
           playsInline
           muted
           webkit-playsinline="true"
@@ -160,7 +170,9 @@ export default function DoorOpening({ onOpenStart, onOpened, onInteraction, chil
           onError={() => {
             finishOpening()
           }}
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover transition-opacity duration-300 ${
+            isClosed ? 'opacity-0' : 'opacity-100'
+          }`}
         />
       </div>
 

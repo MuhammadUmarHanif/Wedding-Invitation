@@ -15,7 +15,7 @@ export default function MusicPlayer({ startSignal }) {
     if (!src) return
     const audio = new Audio()
     audio.loop = true
-    audio.preload = 'auto'
+    audio.preload = 'none'
     audio.src = src
     audio.volume = 0.9
 
